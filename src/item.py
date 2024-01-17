@@ -16,18 +16,10 @@ class Item:
         :param price: Цена за единицу товара.
         :param quantity: Количество товара в магазине.
         """
-        self.__name = None
-        self.name = name
+        self.__name = name
         self.price = price
         self.quantity = quantity
         self.all.append(self)
-
-    def __repr__(self):
-        return (f"{self.__name} privat name\n"
-                f"{self.name} not privat name\n"
-                f"P{self.price} price\n"
-                f"{self.quantity} quantity\n"
-                f"{self.all} all items\n")
 
     def calculate_total_price(self) -> float:
         """
@@ -58,7 +50,6 @@ class Item:
         else:
             self.__name = new_name
 
-
     @classmethod
     def instantiate_from_csv(cls, filename='src/items.csv'):
         """
@@ -69,7 +60,7 @@ class Item:
             reader = csv.DictReader(file)
             for row in reader:
                 print(row)
-                Item.all.append(Item(row['name'], row['price'], row['quantity']))
+                cls(row['name'], row['price'], row['quantity'])
 
 
     @staticmethod
