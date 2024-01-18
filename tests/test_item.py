@@ -2,11 +2,9 @@ import pathlib
 import pytest
 from src.item import Item
 
-
 @pytest.fixture
 def fixture_class_item():
     return Item("Смартфон", 10000, 20)
-
 
 @pytest.fixture
 def fixture_class_item_2():
@@ -15,8 +13,8 @@ def fixture_class_item_2():
 
 def test_check_len_item_all_if_len_zero():
     Item.all.clear()
-    assert len(Item.all) == 0
 
+    assert len(Item.all) == 0
 
 def test_check_len_item_all_if_len_one():
     Item.all.clear()
@@ -24,17 +22,14 @@ def test_check_len_item_all_if_len_one():
 
     assert len(item.all) == 1
 
-
 def test_init_object_item(fixture_class_item):
     assert fixture_class_item.name == "Смартфон"
     assert fixture_class_item.price == 10000
     assert fixture_class_item.quantity == 20
 
-
 def test_sum_total_price(fixture_class_item, fixture_class_item_2):
     assert fixture_class_item.calculate_total_price() == 10000 * 20
     assert fixture_class_item_2.calculate_total_price() == 100 * 666
-
 
 def test_pay_rate(fixture_class_item, fixture_class_item_2):
     fixture_class_item.pay_rate = 0.5
@@ -71,3 +66,8 @@ def test_instantiate_from_csv():
 
     item1 = Item.all[0]
     assert item1.name == 'Смартфон'
+
+def test_repr_and_str():
+    item1 = Item('Смартфон', 10000, 20)
+    assert repr(item1) == "Item('Смартфон', 10000, 20)"
+    assert str(item1) == 'Смартфон'
