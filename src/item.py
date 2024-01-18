@@ -44,11 +44,11 @@ class Item:
         return f"{self.__name}"
 
     @name.setter
-    def name(self, new_name):
-        if len(new_name) > 10:
-            self.__name = new_name[:10]
-        else:
-            self.__name = new_name
+    def name(self, name: str) -> None:
+        """
+        Inout new name
+        """
+        self.__name = str(name).strip()[:10].capitalize()
 
     @classmethod
     def instantiate_from_csv(cls, filename='src/items.csv'):
