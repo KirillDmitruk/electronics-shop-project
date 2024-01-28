@@ -16,16 +16,22 @@ class Item:
         :param price: Цена за единицу товара.
         :param quantity: Количество товара в магазине.
         """
-        self.__name = name
+        self.__name = None
+        self.name = name
         self.price = price
         self.quantity = quantity
         self.all.append(self)
 
     def __repr__(self):
-        return f"Item{self.__name, self.price, self.quantity}"
+        return f"Item('{self.name}', {self.price}, {self.quantity})"
 
     def __str__(self):
-        return self.__name
+        return f'{self.__name}'
+
+    def __add__(self, other):
+        if isinstance(other, Item):
+            return self.quantity + other.quantity
+        raise Exception
 
     def calculate_total_price(self) -> float:
         """
@@ -54,19 +60,20 @@ class Item:
         """
         Inout new name
         """
-        self.__name = str(name).strip()[:10].capitalize()
+        self.__name = str(name).strip()[:10]
 
     @classmethod
-    def instantiate_from_csv(cls, filename='src/items.csv'):
+    def instantiate_from_csv(cls, path_file: str) -> None:
         """
-        Класс-метод, инициализирующий экземпляры класса `Item` данными из файла _src/items.csv
+        Get csv file and create 5 classes
         """
         cls.all.clear()
-        with open(filename) as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                print(row)
-                cls(row['name'], row['price'], row['quantity'])
+
+        with open(path_file, 'r', encoding='windows-1251') as csv_file:
+            file = csv.DictReader(csv_file)
+
+            for row in file:
+                cls(row['name'], float(row['price']), float(row['quantity']))
 
     @staticmethod
     def string_to_number(string: str) -> int:
@@ -75,7 +82,3 @@ class Item:
         """
         clean_string = string.strip().replace(',', '.')
         return int(float(clean_string))
-
-
-print(repr(Item('Смартфон', 10000, 20)))
-print(str(Item('Смартфон', 10000, 20)))
