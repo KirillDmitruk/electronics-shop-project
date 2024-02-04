@@ -1,5 +1,6 @@
 import csv
-
+from pathlib import Path
+import os
 
 class Item:
     """
@@ -7,6 +8,57 @@ class Item:
     """
     pay_rate = 1.0
     all = []
+    PATH_CSV = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "src", "items.csv")
+
+
+    @property
+    def name(self):
+        """
+        Возвращает приватное имя
+        """
+        return self.__name
+
+
+    @name.setter
+    def name(self, value):
+        if len(value) <= 10:
+            self.__name = value
+        else:
+            print('Длина наименования товара превышает 10 символов.')
+            self.__name = value[:10]
+
+
+
+    @classmethod
+    def instantiate_from_csv(cls, filename: str | None = PATH_CSV) -> None:
+        """
+        Инициализирует экземпляры класса данными из файла csv
+        """
+        cls.all.clear()
+        try:
+            with open(filename, newline="",
+                      encoding="windows-1251'", errors="replace") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    name = row["name"]
+                    price = int(row["price"])
+                    quantity = int(row["quantity"])
+                    cls(name, price, quantity)
+        except FileNotFoundError:
+            raise FileNotFoundError("Отсутствует файл item.csv")
+        except Exception:
+            raise InstantiateCSVError
+
+
+    @staticmethod
+    def string_to_number(string: str) -> int:
+        """
+        Статический метод, возвращающий число из числа-строки
+        """
+        clean_string = string.strip().replace(',', '.')
+        return int(float(clean_string))
+
 
     def __init__(self, name: str, price: float, quantity: int) -> None:
         """
@@ -16,22 +68,19 @@ class Item:
         :param price: Цена за единицу товара.
         :param quantity: Количество товара в магазине.
         """
-        self.__name = None
-        self.name = name
+        self.__name = name
         self.price = price
         self.quantity = quantity
-        self.all.append(self)
+        Item.all.append(self)
+
 
     def __repr__(self):
-        return f"Item('{self.name}', {self.price}, {self.quantity})"
+        return f"{self.__class__.__name__}('{self.__name}', {self.price}, {self.quantity})"
+
 
     def __str__(self):
-        return f'{self.__name}'
+        return f"{self.__name}"
 
-    def __add__(self, other):
-        if isinstance(other, Item):
-            return self.quantity + other.quantity
-        raise Exception
 
     def calculate_total_price(self) -> float:
         """
@@ -39,46 +88,21 @@ class Item:
 
         :return: Общая стоимость товара.
         """
-        return self.price * self.quantity
+        total_price = self.price * self.quantity
+        return total_price
+
 
     def apply_discount(self) -> None:
         """
         Применяет установленную скидку для конкретного товара.
-        return self.price with discount
         """
         self.price *= self.pay_rate
+        return None
 
-    @property
-    def name(self) -> str:
-        """
-        Get name
-        """
-        return f"{self.__name}"
+class InstantiateCSVError(Exception):
 
-    @name.setter
-    def name(self, name: str) -> None:
-        """
-        Inout new name
-        """
-        self.__name = str(name).strip()[:10]
+        def __init__(self):
+            self.message = "Файл item.csv поврежден"
 
-    @classmethod
-    def instantiate_from_csv(cls, path_file: str) -> None:
-        """
-        Get csv file and create 5 classes
-        """
-        cls.all.clear()
-
-        with open(path_file, 'r', encoding='windows-1251') as csv_file:
-            file = csv.DictReader(csv_file)
-
-            for row in file:
-                cls(row['name'], float(row['price']), float(row['quantity']))
-
-    @staticmethod
-    def string_to_number(string: str) -> int:
-        """
-        Change from strint to float
-        """
-        clean_string = string.strip().replace(',', '.')
-        return int(float(clean_string))
+        def __str__(self):
+            return self.message
